@@ -29,9 +29,7 @@
   let isPlaying = false;
   let isSeeking = false;
   let lastFrameTime = 0;
-  let lastCorrectionTime = 0;
-  let lastInterfaceUpdate = 0;
-  let animationFrame = 0;
+  let playbackTimer = 0;
 
   const hasModel = () => Boolean(modelUrl) && Number.isFinite(modelVideo.duration);
   const hasStudent = () => Boolean(studentUrl) && Number.isFinite(studentVideo.duration);
@@ -66,31 +64,15 @@
     }
   }
 
-  function syncVideos(force = false) {
+  function syncVideos() {
     if (hasModel()) {
       const target = videoTargetTime(modelVideo, logicalTime);
-      if (force) setVideoTime(modelVideo, target);
+      setVideoTime(modelVideo, target);
     }
     if (hasStudent()) {
       const target = videoTargetTime(studentVideo, logicalTime + offset);
-      if (force) {
-        setVideoTime(studentVideo, target);
-        studentVideo.playbackRate = playbackRate;
-        return;
-      }
-
-      // iOS Safariでは再生中のcurrentTime変更が非常に重い。
-      // 小さなずれは再生速度で徐々に戻し、大きなずれだけ再シークする。
-      const drift = studentVideo.currentTime - target;
-      if (Math.abs(drift) > 0.45) {
-        setVideoTime(studentVideo, target);
-        studentVideo.playbackRate = playbackRate;
-      } else if (Math.abs(drift) > 0.08) {
-        const correction = drift > 0 ? 0.97 : 1.03;
-        studentVideo.playbackRate = playbackRate * correction;
-      } else {
-        studentVideo.playbackRate = playbackRate;
-      }
+      setVideoTime(studentVideo, target);
+      studentVideo.playbackRate = playbackRate;
     }
   }
 
@@ -118,7 +100,7 @@
     isPlaying = false;
     modelVideo.pause();
     studentVideo.pause();
-    cancelAnimationFrame(animationFrame);
+    clearTimeout(playbackTimer);
     updateInterface();
   }
 
@@ -126,17 +108,17 @@
     if (!hasAnyVideo()) return;
     if (logicalTime >= timelineDuration() - 0.001) {
       logicalTime = 0;
-      syncVideos(true);
+      syncVideos();
     }
 
     isPlaying = true;
     lastFrameTime = performance.now();
-    lastCorrectionTime = lastFrameTime;
-    lastInterfaceUpdate = lastFrameTime;
     [modelVideo, studentVideo].forEach((video) => {
       video.playbackRate = playbackRate;
     });
-    syncVideos(true);
+    // 再生開始時だけ位置をそろえる。再生中のcurrentTime変更は
+    // iPhone Safariでデコーダーを停止させるため行わない。
+    syncVideos();
 
     const promises = [];
     if (hasModel() && logicalTime < modelVideo.duration) promises.push(modelVideo.play());
@@ -152,11 +134,12 @@
     }
 
     updateInterface();
-    animationFrame = requestAnimationFrame(playbackLoop);
+    playbackTimer = window.setTimeout(playbackLoop, 200);
   }
 
-  function playbackLoop(now) {
+  function playbackLoop() {
     if (!isPlaying) return;
+    const now = performance.now();
     const elapsed = Math.min((now - lastFrameTime) / 1000, 0.25);
     lastFrameTime = now;
 
@@ -176,7 +159,6 @@
 
     if (logicalTime >= timelineDuration()) {
       logicalTime = timelineDuration();
-      syncVideos(true);
       pauseAll();
       return;
     }
@@ -195,23 +177,14 @@
       modelVideo.pause();
     }
 
-    // 同期補正は毎フレームではなく約0.5秒ごとに限定する。
-    if (now - lastCorrectionTime >= 500) {
-      syncVideos(false);
-      lastCorrectionTime = now;
-    }
-
-    // DOM更新を10fpsに抑え、2本の動画デコードへ処理能力を回す。
-    if (now - lastInterfaceUpdate >= 100) {
-      updateInterface();
-      lastInterfaceUpdate = now;
-    }
-    animationFrame = requestAnimationFrame(playbackLoop);
+    // 操作表示は5fpsで十分。動画描画はSafariのネイティブ再生に任せる。
+    updateInterface();
+    playbackTimer = window.setTimeout(playbackLoop, 200);
   }
 
   function seekTo(time) {
     logicalTime = clamp(time, 0, timelineDuration());
-    syncVideos(true);
+    syncVideos();
     updateInterface();
   }
 
@@ -238,7 +211,7 @@
     video.addEventListener("loadedmetadata", () => {
       video.playbackRate = playbackRate;
       logicalTime = clamp(logicalTime, 0, timelineDuration());
-      syncVideos(true);
+      syncVideos();
       updateInterface();
     });
     video.addEventListener("error", updateInterface);
@@ -258,7 +231,7 @@
   });
   seekBar.addEventListener("change", () => {
     isSeeking = false;
-    syncVideos(true);
+    syncVideos();
   });
 
   speedButtons.forEach((button) => {
@@ -274,7 +247,7 @@
     offset = Math.round(clamp(nextOffset, -10, 10) * 10) / 10;
     const sign = offset > 0 ? "+" : offset < 0 ? "−" : "±";
     offsetValue.textContent = `${sign}${Math.abs(offset).toFixed(1)} 秒`;
-    syncVideos(true);
+    syncVideos();
     updateInterface();
   }
 
