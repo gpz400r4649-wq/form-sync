@@ -29,6 +29,8 @@
   let isPlaying = false;
   let isSeeking = false;
   let lastFrameTime = 0;
+  let lastCorrectionTime = 0;
+  let lastInterfaceUpdate = 0;
   let animationFrame = 0;
 
   const hasModel = () => Boolean(modelUrl) && Number.isFinite(modelVideo.duration);
@@ -67,11 +69,28 @@
   function syncVideos(force = false) {
     if (hasModel()) {
       const target = videoTargetTime(modelVideo, logicalTime);
-      if (force || Math.abs(modelVideo.currentTime - target) > 0.09) setVideoTime(modelVideo, target);
+      if (force) setVideoTime(modelVideo, target);
     }
     if (hasStudent()) {
       const target = videoTargetTime(studentVideo, logicalTime + offset);
-      if (force || Math.abs(studentVideo.currentTime - target) > 0.09) setVideoTime(studentVideo, target);
+      if (force) {
+        setVideoTime(studentVideo, target);
+        studentVideo.playbackRate = playbackRate;
+        return;
+      }
+
+      // iOS Safariでは再生中のcurrentTime変更が非常に重い。
+      // 小さなずれは再生速度で徐々に戻し、大きなずれだけ再シークする。
+      const drift = studentVideo.currentTime - target;
+      if (Math.abs(drift) > 0.45) {
+        setVideoTime(studentVideo, target);
+        studentVideo.playbackRate = playbackRate;
+      } else if (Math.abs(drift) > 0.08) {
+        const correction = drift > 0 ? 0.97 : 1.03;
+        studentVideo.playbackRate = playbackRate * correction;
+      } else {
+        studentVideo.playbackRate = playbackRate;
+      }
     }
   }
 
@@ -112,9 +131,12 @@
 
     isPlaying = true;
     lastFrameTime = performance.now();
+    lastCorrectionTime = lastFrameTime;
+    lastInterfaceUpdate = lastFrameTime;
     [modelVideo, studentVideo].forEach((video) => {
       video.playbackRate = playbackRate;
     });
+    syncVideos(true);
 
     const promises = [];
     if (hasModel() && logicalTime < modelVideo.duration) promises.push(modelVideo.play());
@@ -137,7 +159,20 @@
     if (!isPlaying) return;
     const elapsed = Math.min((now - lastFrameTime) / 1000, 0.25);
     lastFrameTime = now;
-    logicalTime += elapsed * playbackRate;
+
+    // お手本動画を基準時計にする。動画自身のデコード時計を使うことで、
+    // 端末負荷が高い場合も強制シークの連続を避けられる。
+    if (hasModel() && !modelVideo.paused && modelVideo.currentTime < modelVideo.duration - 0.01) {
+      logicalTime = modelVideo.currentTime;
+    } else if (
+      hasStudent() &&
+      !studentVideo.paused &&
+      studentVideo.currentTime < studentVideo.duration - 0.01
+    ) {
+      logicalTime = studentVideo.currentTime - offset;
+    } else {
+      logicalTime += elapsed * playbackRate;
+    }
 
     if (logicalTime >= timelineDuration()) {
       logicalTime = timelineDuration();
@@ -160,8 +195,17 @@
       modelVideo.pause();
     }
 
-    syncVideos(false);
-    updateInterface();
+    // 同期補正は毎フレームではなく約0.5秒ごとに限定する。
+    if (now - lastCorrectionTime >= 500) {
+      syncVideos(false);
+      lastCorrectionTime = now;
+    }
+
+    // DOM更新を10fpsに抑え、2本の動画デコードへ処理能力を回す。
+    if (now - lastInterfaceUpdate >= 100) {
+      updateInterface();
+      lastInterfaceUpdate = now;
+    }
     animationFrame = requestAnimationFrame(playbackLoop);
   }
 
