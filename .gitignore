@@ -1,0 +1,12 @@
+# 児童生徒の動画を誤ってGitHubへ追加しない
+*.mp4
+*.mov
+*.m4v
+*.avi
+*.webm
+*.mkv
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
