@@ -243,17 +243,25 @@
     });
   });
 
-  function setOffset(nextOffset) {
+  function setOffset(nextOffset, showResetFeedback = false) {
     offset = Math.round(clamp(nextOffset, -10, 10) * 10) / 10;
     const sign = offset > 0 ? "+" : offset < 0 ? "−" : "±";
     offsetValue.textContent = `${sign}${Math.abs(offset).toFixed(1)} 秒`;
+    offsetReset.disabled = offset === 0;
+
+    if (showResetFeedback) {
+      offsetValue.classList.remove("reset-confirmed");
+      void offsetValue.offsetWidth;
+      offsetValue.classList.add("reset-confirmed");
+    }
+
     syncVideos();
     updateInterface();
   }
 
   offsetMinus.addEventListener("click", () => setOffset(offset - 0.1));
   offsetPlus.addEventListener("click", () => setOffset(offset + 0.1));
-  offsetReset.addEventListener("click", () => setOffset(0));
+  offsetReset.addEventListener("click", () => setOffset(0, true));
 
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) pauseAll();

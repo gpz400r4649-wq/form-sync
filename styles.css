@@ -449,12 +449,36 @@ input:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+.offset-control output.reset-confirmed {
+  animation: reset-confirmed 0.55s ease-out;
+}
+
 .offset-control .reset-button {
   width: auto;
   margin-left: 3px;
   padding: 0 11px;
   color: var(--muted);
   font-size: 0.7rem;
+}
+
+.offset-control .reset-button:not(:disabled) {
+  color: var(--green-dark);
+  border-color: #a9cbbb;
+  background: var(--green-pale);
+}
+
+@keyframes reset-confirmed {
+  0% {
+    color: #fff;
+    border-radius: 7px;
+    background: var(--green);
+    transform: scale(1.08);
+  }
+  100% {
+    color: var(--ink);
+    background: transparent;
+    transform: scale(1);
+  }
 }
 
 .offset-help {
