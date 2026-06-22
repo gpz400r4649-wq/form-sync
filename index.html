@@ -2,125 +2,204 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#f4f2ec">
-  <title>フォームシンク | 体育フォーム比較</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>フォームシンク｜体育フォーム比較</title>
+  <style>
+    :root{color-scheme:light;--ink:#17211e;--muted:#68736e;--paper:#f4f2ec;--surface:#fffefa;--line:#d8d8d1;--green:#1f6b52;--pale:#e2eee8;--orange:#d86b3d}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-font-smoothing:antialiased}
+    button,input{font:inherit}button,.file-btn{touch-action:manipulation}
+    button{border:0;color:inherit;cursor:pointer}button:disabled,input:disabled{opacity:.35;cursor:default}
+    .app{width:min(1180px,100%);min-height:100vh;margin:auto;padding:max(16px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    h1{margin:0;font-family:Georgia,"Yu Mincho",serif;font-size:clamp(1.5rem,3vw,2rem);font-weight:600;letter-spacing:.04em}
+    .eyebrow,.kicker{margin:0 0 2px;color:var(--green);font-size:.62rem;font-weight:800;letter-spacing:.16em}
+    .privacy{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #bad1c5;border-radius:999px;background:#ffffffaa;color:#174c3c;font-size:.72rem;font-weight:700}
+    .dot{width:8px;height:8px;border-radius:50%;background:#2e936e;box-shadow:0 0 0 4px #2e936e22}
+    .videos{display:grid;gap:10px}
+    .card{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 8px 24px #1c252112}
+    .heading{display:flex;align-items:center;justify-content:space-between;padding:10px 12px}
+    .label{display:flex;align-items:center;gap:9px}.num{display:grid;width:34px;height:34px;place-items:center;border-radius:9px;background:var(--green);color:#fff;font:700 .75rem Georgia,serif}
+    .student .num{background:var(--orange)}.student .kicker{color:var(--orange)}
+    h2{margin:0;font-size:.95rem}
+    .file-btn{position:relative;overflow:hidden;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:.76rem;font-weight:700;cursor:pointer}
+    .file-btn:active{transform:scale(.97)}.file-btn input{position:absolute;width:1px;height:1px;opacity:0}
+    .frame{position:relative;overflow:hidden;height:clamp(180px,25vh,285px);background:#101614}
+    video{display:block;width:100%;height:100%;object-fit:contain;background:#101614}
+    .empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#fffffff5,#e9efebf5);color:#607069}
+    .student .empty{background:linear-gradient(135deg,#fffffff5,#f3e8e0f5)}.empty.hidden{display:none}
+    .plus{display:grid;width:43px;height:43px;margin-bottom:7px;place-items:center;border:1px dashed currentColor;border-radius:50%;font-size:1.4rem}.empty p{margin:0 0 2px;font-size:.85rem;font-weight:700}.empty small{font-size:.66rem}
+    .chip{position:absolute;right:9px;bottom:8px;padding:4px 7px;border-radius:6px;background:#050b09b5;color:#fff;font-size:.68rem;font-variant-numeric:tabular-nums;pointer-events:none}
+    .controls{position:relative;margin-top:10px;padding:12px 16px;border:1px solid var(--line);border-radius:16px;background:#fffefaf2;box-shadow:0 8px 24px #1c252112}
+    .timeline{display:grid;grid-template-columns:58px 1fr 58px;gap:10px;align-items:center}.time{font-size:.72rem;font-weight:700;font-variant-numeric:tabular-nums}.end{text-align:right;color:var(--muted)}
+    .seek{width:100%;height:28px;margin:0;appearance:none;-webkit-appearance:none;background:transparent}.seek::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(to right,var(--green) 0 var(--progress,0%),#d9ddd9 var(--progress,0%) 100%)}.seek::-webkit-slider-thumb{width:23px;height:23px;margin-top:-8.5px;appearance:none;-webkit-appearance:none;border:3px solid #fff;border-radius:50%;background:var(--green);box-shadow:0 2px 7px #13392d52}
+    .primary{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0 10px}.play{display:grid;width:54px;height:54px;place-items:center;border-radius:50%;background:var(--green);color:#fff;box-shadow:0 5px 14px #1f6b5244}.play:active:not(:disabled){transform:scale(.96)}.play svg{width:24px;fill:currentColor}.pause-icon{display:none}.play.playing .play-icon{display:none}.play.playing .pause-icon{display:block}
+    .step{display:flex;width:60px;height:42px;align-items:baseline;justify-content:center;padding-top:11px;border:1px solid var(--line);border-radius:11px;background:#fff;font-size:.8rem;font-weight:800}.step small{margin-left:1px;color:var(--muted);font-size:.58rem}
+    .settings{display:grid;grid-template-columns:minmax(230px,.8fr) minmax(350px,1.2fr);gap:15px;padding-top:10px;border-top:1px solid #e4e3dc}
+    fieldset{min-width:0;margin:0;padding:0;border:0}legend{margin-bottom:7px;color:var(--muted);font-size:.66rem;font-weight:800;letter-spacing:.07em}
+    .segments,.offset{display:flex;min-height:40px;align-items:center}.segments{overflow:hidden;border:1px solid var(--line);border-radius:10px}.segments button{flex:1;align-self:stretch;border-right:1px solid var(--line);background:#fff;font-size:.76rem;font-weight:800}.segments button:last-child{border:0}.segments .active{background:var(--green);color:#fff}
+    .offset{gap:7px}.offset button{width:40px;height:40px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:1.05rem;font-weight:700}.offset output{min-width:90px;text-align:center;font-size:.82rem;font-weight:800;font-variant-numeric:tabular-nums}.offset .reset{width:auto;padding:0 10px;color:var(--muted);font-size:.68rem}.offset .reset:not(:disabled){border-color:#a9cbbb;background:var(--pale);color:#174c3c}.hint{margin:4px 0 0;color:var(--muted);font-size:.62rem}
+    output.flash{animation:flash .55s ease-out}@keyframes flash{0%{border-radius:6px;background:var(--green);color:#fff;transform:scale(1.07)}100%{background:transparent;color:var(--ink);transform:scale(1)}}
+    footer{display:flex;align-items:center;justify-content:center;gap:6px;padding-top:10px;color:var(--muted);font-size:.66rem}
+    @media (orientation:landscape) and (min-width:700px) and (max-height:900px){
+      html,body{height:100%;overflow:hidden}.app{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px;height:100vh;height:100dvh;min-height:0;padding:max(8px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));overflow:hidden}
+      header{min-height:36px;margin:0}.eyebrow{display:none}h1{font-size:1.35rem}.privacy{padding:6px 10px;font-size:.66rem}
+      .videos{grid-template-rows:repeat(2,minmax(0,1fr));min-height:0;gap:7px}.card{display:grid;grid-template-columns:150px minmax(0,1fr);min-height:0;border-radius:13px}.heading{min-width:0;padding:9px;flex-direction:column;align-items:stretch;justify-content:center;gap:9px}.label{gap:7px}.num{width:30px;height:30px}.kicker{font-size:.55rem}h2{font-size:.84rem}.file-btn{padding:8px 5px;text-align:center}.frame{height:auto;min-height:0}
+      .controls{display:grid;grid-template-columns:185px minmax(0,1fr);grid-template-rows:26px 52px;column-gap:14px;min-height:0;margin:0;padding:7px 13px;border-radius:13px}.timeline{grid-column:1/-1}.seek{height:23px}.primary{position:static;grid-column:1;grid-row:2;gap:9px;margin:0}.play{width:46px;height:46px}.step{width:54px;height:39px}
+      .settings{grid-column:2;grid-row:2;grid-template-columns:minmax(200px,.8fr) minmax(320px,1.2fr);gap:12px;min-height:0;margin:0;padding:0;border:0}legend{margin-bottom:3px;font-size:.59rem}.segments,.offset{min-height:37px}.offset button{width:37px;height:37px}.offset .reset{height:37px}.hint,footer{display:none}
+    }
+    @media (orientation:portrait),(max-width:700px){.app{padding-inline:12px}.frame{height:auto;aspect-ratio:16/9}.settings{grid-template-columns:1fr}}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
 </head>
 <body>
-  <main class="app-shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">PHYSICAL EDUCATION</p>
-        <h1>フォームシンク</h1>
-      </div>
-      <div class="privacy-badge" aria-label="プライバシー保護">
-        <span class="privacy-dot" aria-hidden="true"></span>
-        端末内だけで処理
-      </div>
+  <main class="app">
+    <header>
+      <div><p class="eyebrow">PHYSICAL EDUCATION</p><h1>フォームシンク</h1></div>
+      <div class="privacy"><span class="dot" aria-hidden="true"></span>端末内だけで処理</div>
     </header>
 
-    <section class="video-stack" aria-label="動画比較">
-      <article class="video-card model-card">
-        <div class="card-heading">
-          <div class="video-label">
-            <span class="label-number">01</span>
-            <div>
-              <span class="label-kicker">REFERENCE</span>
-              <h2>お手本動画</h2>
-            </div>
-          </div>
-          <label class="file-button">
-            <input id="modelFile" type="file" accept="video/*">
-            <span>動画を選ぶ</span>
-          </label>
+    <section class="videos" aria-label="動画比較">
+      <article class="card model">
+        <div class="heading">
+          <div class="label"><span class="num">01</span><div><span class="kicker">REFERENCE</span><h2>お手本動画</h2></div></div>
+          <label class="file-btn"><input id="modelFile" type="file" accept="video/*"><span>動画を選ぶ</span></label>
         </div>
-        <div class="video-frame">
+        <div class="frame">
           <video id="modelVideo" playsinline webkit-playsinline preload="metadata" muted></video>
-          <div class="empty-state" id="modelEmpty">
-            <span class="empty-icon" aria-hidden="true">＋</span>
-            <p>お手本動画を選択</p>
-            <small>端末内の動画ファイル</small>
-          </div>
-          <span class="time-chip" id="modelTime">00:00.0</span>
+          <div class="empty" id="modelEmpty"><span class="plus">＋</span><p>お手本動画を選択</p><small>端末内の動画ファイル</small></div>
+          <span class="chip" id="modelTime">00:00.0</span>
         </div>
       </article>
 
-      <article class="video-card student-card">
-        <div class="card-heading">
-          <div class="video-label">
-            <span class="label-number">02</span>
-            <div>
-              <span class="label-kicker">STUDENT</span>
-              <h2>生徒動画</h2>
-            </div>
-          </div>
-          <label class="file-button">
-            <input id="studentFile" type="file" accept="video/*">
-            <span>動画を選ぶ</span>
-          </label>
+      <article class="card student">
+        <div class="heading">
+          <div class="label"><span class="num">02</span><div><span class="kicker">STUDENT</span><h2>生徒動画</h2></div></div>
+          <label class="file-btn"><input id="studentFile" type="file" accept="video/*"><span>動画を選ぶ</span></label>
         </div>
-        <div class="video-frame">
+        <div class="frame">
           <video id="studentVideo" playsinline webkit-playsinline preload="metadata" muted></video>
-          <div class="empty-state" id="studentEmpty">
-            <span class="empty-icon" aria-hidden="true">＋</span>
-            <p>生徒動画を選択</p>
-            <small>端末内の動画ファイル</small>
-          </div>
-          <span class="time-chip" id="studentTime">00:00.0</span>
+          <div class="empty" id="studentEmpty"><span class="plus">＋</span><p>生徒動画を選択</p><small>端末内の動画ファイル</small></div>
+          <span class="chip" id="studentTime">00:00.0</span>
         </div>
       </article>
     </section>
 
-    <section class="control-deck" aria-label="再生コントロール">
-      <div class="timeline-row">
-        <span id="currentTime" class="timeline-time">00:00.0</span>
-        <input id="seekBar" class="seek-bar" type="range" min="0" max="1000" value="0" step="1" aria-label="再生位置" disabled>
-        <span id="durationTime" class="timeline-time end-time">00:00.0</span>
+    <section class="controls" aria-label="再生コントロール">
+      <div class="timeline">
+        <span id="currentTime" class="time">00:00.0</span>
+        <input id="seekBar" class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="再生位置" disabled>
+        <span id="durationTime" class="time end">00:00.0</span>
       </div>
-
-      <div class="primary-controls">
-        <button id="backButton" class="icon-button" type="button" aria-label="0.1秒戻る" disabled>
-          <span aria-hidden="true">−0.1</span><small>秒</small>
-        </button>
-        <button id="playButton" class="play-button" type="button" aria-label="再生" disabled>
+      <div class="primary">
+        <button id="backButton" class="step" type="button" aria-label="0.1秒戻る" disabled>−0.1<small>秒</small></button>
+        <button id="playButton" class="play" type="button" aria-label="再生" disabled>
           <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5z"/></svg>
           <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
         </button>
-        <button id="forwardButton" class="icon-button" type="button" aria-label="0.1秒進む" disabled>
-          <span aria-hidden="true">＋0.1</span><small>秒</small>
-        </button>
+        <button id="forwardButton" class="step" type="button" aria-label="0.1秒進む" disabled>＋0.1<small>秒</small></button>
       </div>
-
-      <div class="settings-grid">
-        <fieldset class="setting-group speed-group">
-          <legend>再生速度</legend>
-          <div class="segmented-control" id="speedControl">
+      <div class="settings">
+        <fieldset><legend>再生速度</legend>
+          <div class="segments">
             <button type="button" data-speed="0.25">0.25×</button>
             <button type="button" data-speed="0.5">0.5×</button>
             <button type="button" data-speed="1" class="active">1×</button>
           </div>
         </fieldset>
-
-        <fieldset class="setting-group offset-group">
-          <legend>生徒動画の同期調整</legend>
-          <div class="offset-control">
+        <fieldset><legend>生徒動画の同期調整</legend>
+          <div class="offset">
             <button id="offsetMinus" type="button" aria-label="生徒動画を0.1秒遅らせる">−</button>
             <output id="offsetValue" aria-live="polite">±0.0 秒</output>
             <button id="offsetPlus" type="button" aria-label="生徒動画を0.1秒進める">＋</button>
-            <button id="offsetReset" class="reset-button" type="button" disabled>0秒に戻す</button>
+            <button id="offsetReset" class="reset" type="button" disabled>0秒に戻す</button>
           </div>
-          <p class="offset-help">− 遅らせる ／ ＋ 先へ進める</p>
+          <p class="hint">− 遅らせる ／ ＋ 先へ進める</p>
         </fieldset>
       </div>
     </section>
-
-    <footer>
-      <span class="lock-mark" aria-hidden="true">●</span>
-      動画データはアップロードされません
-    </footer>
+    <footer>●　動画データはアップロードされません</footer>
   </main>
 
-  <script src="app.js"></script>
+  <script>
+  (() => {
+    "use strict";
+    const $=id=>document.getElementById(id);
+    const model=$("modelVideo"),student=$("studentVideo"),modelFile=$("modelFile"),studentFile=$("studentFile");
+    const modelEmpty=$("modelEmpty"),studentEmpty=$("studentEmpty"),modelTime=$("modelTime"),studentTime=$("studentTime");
+    const currentTime=$("currentTime"),durationTime=$("durationTime"),seek=$("seekBar"),play=$("playButton");
+    const back=$("backButton"),forward=$("forwardButton"),minus=$("offsetMinus"),plus=$("offsetPlus");
+    const reset=$("offsetReset"),offsetOut=$("offsetValue"),speedButtons=[...document.querySelectorAll("[data-speed]")];
+    let modelUrl="",studentUrl="",time=0,offset=0,rate=1,playing=false,timer=0,lastTick=0;
+    const valid=v=>Boolean(v.src)&&Number.isFinite(v.duration);
+    const any=()=>valid(model)||valid(student);
+    const clamp=(v,min,max)=>Math.min(Math.max(v,min),max);
+    const fmt=s=>{s=Math.max(0,Number.isFinite(s)?s:0);const m=Math.floor(s/60),r=s-m*60;return `${String(m).padStart(2,"0")}:${r.toFixed(1).padStart(4,"0")}`};
+    const duration=()=>Math.max(valid(model)?model.duration:0,valid(student)?Math.max(0,student.duration-offset):0,0);
+    const target=(v,t)=>clamp(t,0,Math.max(0,v.duration-.001));
+    function setTime(v,t){if(valid(v)){const n=target(v,t);if(Math.abs(v.currentTime-n)>.015)v.currentTime=n}}
+    function sync(){if(valid(model))setTime(model,time);if(valid(student))setTime(student,time+offset);student.playbackRate=rate}
+    function render(){
+      const d=duration();time=clamp(time,0,d);const p=d?time/d:0;
+      seek.value=String(Math.round(p*1000));seek.style.setProperty("--progress",`${p*100}%`);
+      currentTime.textContent=fmt(time);durationTime.textContent=fmt(d);
+      modelTime.textContent=fmt(valid(model)?model.currentTime:0);studentTime.textContent=fmt(valid(student)?student.currentTime:0);
+      play.disabled=back.disabled=forward.disabled=seek.disabled=!any();
+      play.classList.toggle("playing",playing);play.setAttribute("aria-label",playing?"一時停止":"再生");
+    }
+    function pause(){playing=false;model.pause();student.pause();clearTimeout(timer);render()}
+    async function start(){
+      if(!any())return;if(time>=duration()-.001)time=0;
+      playing=true;lastTick=performance.now();model.playbackRate=student.playbackRate=rate;sync();
+      const tasks=[];if(valid(model)&&time<model.duration)tasks.push(model.play());
+      if(valid(student)&&time+offset>=0&&time+offset<student.duration)tasks.push(student.play());
+      try{await Promise.all(tasks)}catch(e){pause();return}render();timer=setTimeout(loop,200)
+    }
+    function loop(){
+      if(!playing)return;const now=performance.now(),elapsed=Math.min((now-lastTick)/1000,.3);lastTick=now;
+      if(valid(model)&&!model.paused&&model.currentTime<model.duration-.01)time=model.currentTime;
+      else if(valid(student)&&!student.paused&&student.currentTime<student.duration-.01)time=student.currentTime-offset;
+      else time+=elapsed*rate;
+      if(time>=duration()){time=duration();pause();return}
+      const st=time+offset;
+      if(valid(student)&&student.paused&&st>=0&&st<student.duration)student.play().catch(()=>{});
+      if(valid(student)&&!student.paused&&(st<0||st>=student.duration))student.pause();
+      if(valid(model)&&model.paused&&time<model.duration)model.play().catch(()=>{});
+      if(valid(model)&&!model.paused&&time>=model.duration)model.pause();
+      render();timer=setTimeout(loop,200)
+    }
+    function seekTo(t){time=clamp(t,0,duration());sync();render()}
+    function load(input,v,empty,type){
+      const file=input.files&&input.files[0];if(!file)return;pause();
+      if(type==="model"&&modelUrl)URL.revokeObjectURL(modelUrl);
+      if(type==="student"&&studentUrl)URL.revokeObjectURL(studentUrl);
+      const url=URL.createObjectURL(file);if(type==="model")modelUrl=url;else studentUrl=url;
+      v.src=url;v.load();empty.classList.add("hidden")
+    }
+    modelFile.addEventListener("change",()=>load(modelFile,model,modelEmpty,"model"));
+    studentFile.addEventListener("change",()=>load(studentFile,student,studentEmpty,"student"));
+    [model,student].forEach(v=>{
+      v.addEventListener("loadedmetadata",()=>{v.playbackRate=rate;time=clamp(time,0,duration());sync();render()});
+      v.addEventListener("error",()=>{pause();alert("この動画を再生できません。MP4（H.264）形式をお試しください。")})
+    });
+    play.addEventListener("click",()=>playing?pause():start());
+    back.addEventListener("click",()=>seekTo(time-.1));forward.addEventListener("click",()=>seekTo(time+.1));
+    seek.addEventListener("input",()=>seekTo(Number(seek.value)/1000*duration()));
+    speedButtons.forEach(b=>b.addEventListener("click",()=>{rate=Number(b.dataset.speed);model.playbackRate=student.playbackRate=rate;speedButtons.forEach(x=>x.classList.toggle("active",x===b))}));
+    function setOffset(n,flash=false){
+      offset=Math.round(clamp(n,-10,10)*10)/10;const sign=offset>0?"+":offset<0?"−":"±";
+      offsetOut.textContent=`${sign}${Math.abs(offset).toFixed(1)} 秒`;reset.disabled=offset===0;
+      if(flash){offsetOut.classList.remove("flash");void offsetOut.offsetWidth;offsetOut.classList.add("flash")}
+      sync();render()
+    }
+    minus.addEventListener("click",()=>setOffset(offset-.1));plus.addEventListener("click",()=>setOffset(offset+.1));reset.addEventListener("click",()=>setOffset(0,true));
+    document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});
+    window.addEventListener("pagehide",()=>{pause();if(modelUrl)URL.revokeObjectURL(modelUrl);if(studentUrl)URL.revokeObjectURL(studentUrl)});
+    render();
+  })();
+  </script>
 </body>
 </html>
